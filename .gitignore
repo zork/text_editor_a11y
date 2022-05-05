@@ -1,0 +1,17 @@
+# vim noise
+.*.swp
+
+# osx noise
+.DS_Store
+*.xcodeproj
+
+# win noise
+*.opensdf
+*.sdf
+*.sln
+*.suo
+*.vcxproj
+*.vcxproj.filters
+Debug/
+Release/
+Thumbs.db
