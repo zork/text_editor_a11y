@@ -6,12 +6,6 @@ function $(id) {
   return document.getElementById(id);
 }
 
-window.addEventListener("keydown", function(e) {
-  if(["Space","ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].indexOf(e.code) > -1) {
-    e.preventDefault();
-  }
-}, false);
-
 var engine = null;
 var timer = null;
 var a11yRootNode = null;
@@ -63,6 +57,10 @@ window.addEventListener("beforeunload", function(e) {
 }, false);
 
 window.addEventListener("keydown", function(event) {
+  if(["Space","Tab", "ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].indexOf(event.code) > -1) {
+    event.preventDefault();
+  }
+
   if (engine) {
     engine.OnKeyDown(event.keyCode);
     if (event.key.length == 1) {
