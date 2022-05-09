@@ -57,7 +57,13 @@ window.addEventListener("beforeunload", function(e) {
 }, false);
 
 window.addEventListener("keydown", function(event) {
-  if(["Space","Tab", "ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].indexOf(event.code) > -1) {
+  // Prevent scrolling and tabbing out of web content.
+  if(["Tab", "ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].indexOf(event.code) > -1) {
+    event.preventDefault();
+  }
+
+  // Allow Space to go to EditContext, but not scroll the page.
+  if(!$('canvas').editContext && ["Space"].indexOf(event.code) > -1) {
     event.preventDefault();
   }
 
@@ -174,6 +180,42 @@ function setupAccessibilityNode(id, node) {
   }
   setupAccessibilityChildNodes(id, node);
   // TODO: IsClickable
+}
+
+function startTextEdit(text, selectionStart, selectionEnd) {
+  const canvas = $('canvas');
+  const editContext = new EditContext({"text": text,
+                                       "selectionStart": selectionStart,
+                                       "selectionEnd": selectionEnd});
+  canvas.editContext = editContext;
+
+  editContext.addEventListener('textupdate', (e) => {
+    console.log(e);
+    if (engine) {
+      engine.OnTextUpdate(e.updateText, e.updateRangeStart, e.updateRangeEnd,
+                          e.newSelectionStart, e.newSelectionEnd);
+    }
+  });
+
+  canvas.focus();
+}
+
+function stopTextEdit() {
+  $('canvas').editContext = null;
+}
+
+function updateTextEditText(start, end, text) {
+  var ec = $('canvas').editContext;
+  if (ec) {
+    ec.updateText(start, end, text);
+  }
+}
+
+function updateTextEditSelection(start, end) {
+  var ec = $('canvas').editContext;
+  if (ec) {
+    ec.updateSelection(start, end);
+  }
 }
 
 function lockMouse() {
