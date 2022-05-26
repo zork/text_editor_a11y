@@ -8,6 +8,7 @@ function $(id) {
 
 var engine = null;
 var timer = null;
+var useAOM = false;
 var a11yRootNode = null;
 var a11yNodes = {};
 Module['onRuntimeInitialized'] = function() {
@@ -29,6 +30,14 @@ Module['onRuntimeInitialized'] = function() {
       a11yRootNode = canvas.accessibleNode;
       a11yRootNode.role = 'region';
       a11yRootNode.id = -1;
+      useAOM = true;
+    } else {
+      // Use DOM fallback.
+      a11yRootNode = document.createElement('div');
+      a11yRootNode.setAttribute('role', 'region');
+      a11yRootNode.id = -1;
+      canvas.appendChild(a11yRootNode);
+      useAOM = false;
     }
 
     // Create the engine
@@ -105,7 +114,7 @@ function debugRefreshA11yTree() {
 }
 
 function debugPrintA11yTree() {
-  if (a11yRootNode != undefined) {
+  if (useAOM) {
     printA11yTree(a11yRootNode, "");
   } else {
     console.log("AOM not enabled");
@@ -131,14 +140,20 @@ function getAccessibilityNode(id) {
 }
 
 function resetAccessibilityNode(node) {
-  node.offsetLeft = 0;
-  node.offsetTop = 0;
-  node.offsetWidth = 0;
-  node.offsetHeight = 0;
+  if (useAOM) {
+    node.offsetLeft = 0;
+    node.offsetTop = 0;
+    node.offsetWidth = 0;
+    node.offsetHeight = 0;
 
-  node.label = "";
-  node.live = "off";
-  node.role = "region";
+    node.label = "";
+    node.live = "off";
+    node.role = "region";
+  } else {
+    node.ariaLabel = "";
+    node.ariaLive = "off";
+    node.setAttribute('role', 'region');
+  }
 
   deleteAccessibilityNodeChildren(node);
 }
@@ -156,33 +171,32 @@ function deleteAccessibilityNode(node) {
 }
 
 function a11yInvalidateView(id) {
-  if (a11yRootNode != undefined) {
-    var node = getAccessibilityNode(id);
-    if (node) {
-      resetAccessibilityNode(node);
-      setupAccessibilityNode(id, node);
-    }
+  var node = getAccessibilityNode(id);
+  if (node) {
+    resetAccessibilityNode(node);
+    setupAccessibilityNode(id, node);
   }
 }
 
 function a11yRefreshView(id) {
-  if (a11yRootNode != undefined) {
-    var node = getAccessibilityNode(id);
-    if (node) {
-      engine.SetupAccessibilityNode(id, node);
-    }
+  var node = getAccessibilityNode(id);
+  if (node) {
+    engine.SetupAccessibilityNode(id, node, useAOM);
   }
 }
 
 function setupAccessibilityNode(id, node) {
   if (id != -1) {
-    engine.SetupAccessibilityNode(id, node);
+    engine.SetupAccessibilityNode(id, node, useAOM);
   }
   setupAccessibilityChildNodes(id, node);
   // TODO: IsClickable
 }
 
 function startTextEdit(text, selectionStart, selectionEnd) {
+  if (typeof(EditContext) == 'undefined') {
+    return false;
+  }
   const canvas = $('canvas');
   const editContext = new EditContext({"text": text,
                                        "selectionStart": selectionStart,
@@ -198,6 +212,7 @@ function startTextEdit(text, selectionStart, selectionEnd) {
   });
 
   canvas.focus();
+  return true;
 }
 
 function stopTextEdit() {
@@ -229,10 +244,15 @@ function unlockMouse() {
 function setupAccessibilityChildNodes(id, node) {
   var children = engine.GetChildViewIds(id);
   children.forEach(function(childId) {
-    var childNode = new AccessibleNode();
+    var childNode;
+    if (useAOM) {
+      childNode = new AccessibleNode();
+      childNode.offsetParent = node;
+    } else {
+      childNode = document.createElement('div');
+    }
     childNode.id = childId;
     a11yNodes[childId] = childNode;
-    childNode.offsetParent = node;
     setupAccessibilityNode(childId, childNode);
     node.appendChild(childNode);
   });
