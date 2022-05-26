@@ -185,6 +185,21 @@ function a11yRefreshView(id) {
   }
 }
 
+function a11yFocusView(id) {
+  if (useAOM) {
+    // TODO: Support AOM
+  } else {
+    if (id == -1) {
+      document.activeElement.blur();
+    } else {
+      var node = getAccessibilityNode(id);
+      if (node) {
+        node.focus();
+      }
+    }
+  }
+}
+
 function setupAccessibilityNode(id, node) {
   if (id != -1) {
     engine.SetupAccessibilityNode(id, node, useAOM);
