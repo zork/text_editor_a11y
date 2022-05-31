@@ -72,7 +72,7 @@ window.addEventListener("keydown", function(event) {
   }
 
   // Allow Space to go to EditContext, but not scroll the page.
-  if(!$('canvas').editContext && ["Space"].indexOf(event.code) > -1) {
+  if(!document.activeElement.editContext && ["Space"].indexOf(event.code) > -1) {
     event.preventDefault();
   }
 
@@ -208,15 +208,21 @@ function setupAccessibilityNode(id, node) {
   // TODO: IsClickable
 }
 
-function startTextEdit(text, selectionStart, selectionEnd) {
+function startTextEdit(id, text, selectionStart, selectionEnd) {
   if (typeof(EditContext) == 'undefined') {
     return false;
   }
-  const canvas = $('canvas');
+
+  var node = getAccessibilityNode(id);
+  if (!node) {
+    console.log("startTextEdit missing node: " + id);
+    return false;
+  }
+
   const editContext = new EditContext({"text": text,
                                        "selectionStart": selectionStart,
                                        "selectionEnd": selectionEnd});
-  canvas.editContext = editContext;
+  node.editContext = editContext;
 
   editContext.addEventListener('textupdate', (e) => {
     console.log(e);
@@ -226,23 +232,27 @@ function startTextEdit(text, selectionStart, selectionEnd) {
     }
   });
 
-  canvas.focus();
   return true;
 }
 
-function stopTextEdit() {
-  $('canvas').editContext = null;
+function stopTextEdit(id) {
+  var node = getAccessibilityNode(id);
+  if (!node) {
+    console.log("stopTextEdit missing node: " + id);
+    return false;
+  }
+  node.editContext = null;
 }
 
 function updateTextEditText(start, end, text) {
-  var ec = $('canvas').editContext;
+  var ec = document.activeElement.editContext;
   if (ec) {
     ec.updateText(start, end, text);
   }
 }
 
 function updateTextEditSelection(start, end) {
-  var ec = $('canvas').editContext;
+  var ec = document.activeElement.editContext;
   if (ec) {
     ec.updateSelection(start, end);
   }

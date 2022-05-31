@@ -1745,7 +1745,7 @@ function _emscripten_asm_const_i(code) {
 
 STATIC_BASE = GLOBAL_BASE;
 
-STATICTOP = STATIC_BASE + 150224;
+STATICTOP = STATIC_BASE + 150272;
 /* global initializers */ if (!ENVIRONMENT_IS_PTHREAD) __ATINIT__.push({ func: function() { __GLOBAL__sub_I_wasm_engine_cpp() } }, { func: function() { __GLOBAL__sub_I_message_queue_cpp() } }, { func: function() { __GLOBAL__sub_I_mutex_cpp() } }, { func: function() { __GLOBAL__sub_I_thread_util_cpp() } }, { func: function() { __GLOBAL__sub_I_bind_cpp() } }, { func: function() { ___emscripten_pthread_data_constructor() } });
 
 
@@ -1756,7 +1756,7 @@ memoryInitializer = "game.js.mem";
 
 
 
-var STATIC_BUMP = 150224;
+var STATIC_BUMP = 150272;
 Module["STATIC_BASE"] = STATIC_BASE;
 Module["STATIC_BUMP"] = STATIC_BUMP;
 
@@ -1861,16 +1861,16 @@ function copyTempDouble(ptr) {
     lockMouse();
   }
 
-  function _WasmStartTextEdit(text, selectionStart, selectionEnd) {
+  function _WasmStartTextEdit(id, text, selectionStart, selectionEnd) {
     text = Pointer_stringify(text);
     console.log("StartTextEdit");
     console.log(text);
-    return startTextEdit(text, selectionStart, selectionEnd);
+    return startTextEdit(id, text, selectionStart, selectionEnd);
   }
 
-  function _WasmStopTextEdit() {
+  function _WasmStopTextEdit(id) {
     console.log("StopTextEdit");
-    stopTextEdit();
+    stopTextEdit(id);
   }
 
   function _WasmUnlockMouse() {
