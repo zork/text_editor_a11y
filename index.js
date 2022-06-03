@@ -203,6 +203,14 @@ function a11yFocusView(id) {
 function setupAccessibilityNode(id, node) {
   if (id != -1) {
     engine.SetupAccessibilityNode(id, node, useAOM);
+    if (!useAOM) {
+      if (engine.IsClickable(id)) {
+        node.addEventListener('click', (e) => {
+          console.log("Click sent from AT");
+          engine.ClickView(id);
+        });
+      }
+    }
   }
   setupAccessibilityChildNodes(id, node);
   // TODO: IsClickable

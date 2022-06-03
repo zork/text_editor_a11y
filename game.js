@@ -1745,7 +1745,7 @@ function _emscripten_asm_const_i(code) {
 
 STATIC_BASE = GLOBAL_BASE;
 
-STATICTOP = STATIC_BASE + 150272;
+STATICTOP = STATIC_BASE + 150320;
 /* global initializers */ if (!ENVIRONMENT_IS_PTHREAD) __ATINIT__.push({ func: function() { __GLOBAL__sub_I_wasm_engine_cpp() } }, { func: function() { __GLOBAL__sub_I_message_queue_cpp() } }, { func: function() { __GLOBAL__sub_I_mutex_cpp() } }, { func: function() { __GLOBAL__sub_I_thread_util_cpp() } }, { func: function() { __GLOBAL__sub_I_bind_cpp() } }, { func: function() { ___emscripten_pthread_data_constructor() } });
 
 
@@ -1756,7 +1756,7 @@ memoryInitializer = "game.js.mem";
 
 
 
-var STATIC_BUMP = 150272;
+var STATIC_BUMP = 150320;
 Module["STATIC_BASE"] = STATIC_BASE;
 Module["STATIC_BUMP"] = STATIC_BUMP;
 
